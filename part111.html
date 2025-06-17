@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>part.1-1</title>
+    <style>
+        @font-face {
+            font-family: 'Cafe24ClassicType-Regular';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2210-2@1.0/Cafe24ClassicType-Regular.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Pretendard-Regular';
+            src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #F8F2F2;
+            font-family: 'Cafe24ClassicType-Regular', sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .gallery-menu {
+            position: absolute;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 10;
+        }
+
+        .menu-item {
+            color: #7C0000;
+            font-size: 19px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: normal;
+            line-height: 1.2;
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-item:hover {
+            transform: scale(1.15);
+        }
+
+        .gallery-menu:hover .menu-item:not(:hover) {
+            transform: scale(0.85);
+            opacity: 0.6;
+        }
+
+        /* 1st 메뉴 아이템과 페이지 번호 스타일 */
+        .menu-item-with-pages {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .page-numbers {
+            display: flex;
+            gap: 10px;
+            font-size: 17px;
+            font-family: 'Pretendard-Regular', sans-serif;
+        }
+
+        .page-number {
+            font-family: Cafe24ClassicType-Regular;
+            color: #999;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .page-number.active {
+            font-family: 'Cafe24ClassicType-Regular';
+            color: #7C0000;
+            font-weight: bold;
+        }
+
+        /* 카드 뒤집기 효과를 위한 컨테이너 */
+        .flip-container {
+            width: 90vw; 
+            max-width: 840px;
+            height: 60vw;
+            max-height: 550px;
+            perspective: 1000px;
+            transform: translateY(-15px);
+            cursor: pointer;
+        }
+
+        .flip-card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+
+        .flip-container.flipped .flip-card {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 60px;
+            box-shadow: 0 30px 60px rgba(193, 162, 162, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .card-front {
+            background-color: white;
+        }
+
+        .card-back {
+            background: white;
+            transform: rotateY(180deg);
+            color: #7C0000;
+            padding: 40px;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: stretch;
+        }
+
+        .card-back-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-shrink: 0;
+        }
+
+        .card-back-title {
+            text-align: center;
+            flex: 1;
+            font-family: Pretendard-Regular;
+        }
+
+        .card-back-title h1 {
+            font-size: 32px;
+            font-weight: bold;
+            font-family: Pretendard-Regular;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .card-back-title .subtitle {
+            font-size: 14px;
+            color: #000000;
+            align-self: flex-start;
+            font-family: Pretendard-Regular;
+        }
+
+        .card-back-part {
+            font-size: 14px;
+            color: #000000;
+            align-self: flex-end;
+            font-family: Pretendard-Regular;
+        }
+
+        .divider {
+            width: 100%;
+            height: 1px;
+            background-color: #ddd;
+            margin: 15px 0;
+            flex-shrink: 0;
+        }
+
+        .card-back-content {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            padding-left: 10px;
+            line-height: 1.5;
+            font-size: 18px;
+            color: #333;
+            text-align: justify;
+            font-family: Pretendard-Regular;
+        }
+
+        .card-back-content p {
+            margin-bottom: 20px;
+        }
+
+        /* 스크롤바 스타일링 */
+        .card-back-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .card-back-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .card-back-content::-webkit-scrollbar-thumb {
+            background: #acacac;
+            border-radius: 3px;
+        }
+
+        .card-back-content::-webkit-scrollbar-thumb:hover {
+            background: #7C0000;
+        }
+
+        .card-front img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 64px;
+            filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.15));
+        }
+
+        /* 하트 버튼 스타일 - 사진에 맞게 수정 */
+        .heart-button {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            width: 60px;
+            height: 55px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .heart-button:hover {
+            transform: scale(1.1);
+        }
+
+        .heart-shape {
+            position: relative;
+            width: 60px;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .heart-shape:before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 30px;
+            height: 48px;
+            background: #7C0000;
+            border-radius: 30px 30px 0 0;
+            transform: rotate(-45deg);
+            transform-origin: 0 100%;
+        }
+
+        .heart-shape:after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 30px;
+            height: 48px;
+            background: #7C0000;
+            border-radius: 30px 30px 0 0;
+            transform: rotate(45deg);
+            transform-origin: 50% 25%;
+        }
+
+        .heart-number {
+            font-family: 'Cafe24ClassicType-Regular';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            z-index: 1;
+            margin-top: -2px;
+        }
+
+        .arrow-left, .arrow-right {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 45px;
+            height: 45px;
+            background-color: white;
+            border: 0.6px solid #be8d8d;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 28px;
+            font-family: Pretendard-Regular;
+            font-weight: bold;
+            color: #7C0000;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0px 10px rgba(146, 110, 110, 0.3);
+        }
+
+        .arrow-left {
+            left: 50%;
+            margin-left: -500px;
+        }
+
+        .arrow-right {
+            right: 50%;
+            margin-right: -500px;
+        }
+
+        .arrow-left:hover, .arrow-right:hover {
+            transform: translateY(-50%) scale(1.1);
+            color: #A00000;
+            box-shadow: 0 12px 24px rgba(193, 162, 162, 0.4);
+        }
+
+        @media (max-width: 1200px) {
+            .gallery-menu {
+                left: 40px;
+            }
+            
+            .menu-item {
+                font-size: 22px;
+            }
+            
+            .page-numbers {
+                font-size: 20px;
+            }
+            
+            .arrow-left {
+                margin-left: -400px;
+            }
+            
+            .arrow-right {
+                margin-right: -400px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .gallery-menu {
+                left: 20px;
+                gap: 12px;
+            }
+            
+            .menu-item {
+                font-size: 18px;
+            }
+            
+            .page-numbers {
+                font-size: 16px;
+                gap: 8px;
+            }
+            
+            .menu-item-with-pages {
+                gap: 12px;
+            }
+            
+            .heart-button {
+                top: 15px;
+                right: 15px;
+                width: 50px;
+                height: 45px;
+            }
+            
+            .heart-shape {
+                width: 50px;
+                height: 45px;
+            }
+            
+            .heart-shape:before,
+            .heart-shape:after {
+                width: 25px;
+                height: 40px;
+                border-radius: 25px 25px 0 0;
+            }
+            
+            .heart-number {
+                font-size: 20px;
+            }
+            
+            .arrow-left, .arrow-right {
+                font-size: 24px;
+                font-weight: bold;
+                width: 42px;
+                height: 42px;
+            }
+            
+            .arrow-left {
+                margin-left: -250px;
+            }
+            
+            .arrow-right {
+                margin-right: -250px;
+            }
+            
+            .flip-container {
+                width: 70vw;
+                height: 52.5vw;
+                transform: translateY(-10px);
+            }
+
+            .card-back {
+                padding: 25px;
+            }
+
+            .card-back-title h1 {
+                font-size: 30px;
+            }
+
+            .card-back-title .subtitle {
+                font-size: 12px;
+            }
+
+            .card-back-part {
+                font-size: 12px;
+            }
+
+            .card-back-content {
+                font-size: 12px;
+                line-height: 1.6;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="gallery-menu">
+            <div class="menu-item menu-item-with-pages">
+                <span>1st</span>
+                <div class="page-numbers">
+                    <span class="page-number active">1</span>
+                    <span class="page-number">2</span>
+                    <span class="page-number">3</span>
+                </div>
+            </div>
+            <a href="part2.html" class="menu-item">2nd</a>
+            <a href="part3.html" class="menu-item">3rd</a>
+            <a href="part4.html" class="menu-item">4th</a>
+            <a href="part5.html" class="menu-item">5th</a>
+            <a href="part6.html" class="menu-item">6th</a>
+            <a href="chopin2.html" class="menu-item">Gallery</a>
+            <a href="piano.html" class="menu-item">Piano</a>
+        </div>
+        
+        <button class="arrow-left" onclick="goToPreviousPage()">←</button>
+        
+        <div class="flip-container" onclick="flipCard()">
+            <div class="flip-card">
+                <div class="card-front">
+                    <img src="https://i.imgur.com/251kFxj.png" alt="Gallery Image">
+                </div>
+                <div class="card-back">
+                    <div class="card-back-header">
+                        <div class="card-back-title">
+                            <div class="subtitle">chopin</div>
+                            <h1>쇼팽의 유년 시절</h1>
+                        </div>
+                        <div class="card-back-part">part.1</div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="card-back-content">
+                        <p>쇼팽은 1810년 3월 1일(혹은 2월 22일, 기록마다 다름) 폴란드의 젤라조바 볼라라는 작은 마을에서 태어났습니다. 그의 아버지 니콜라스 쇼팽은 프랑스 출신이지만 폴란드로 이주해 귀족 가정의 가정교사로 일하며 살았다고 알려져 있으며, 어머니 유스티나 크지자노프스카는 폴란드 귀족 출신으로 가정에서 음악을 연주하는 것을 즐겼습니다.</p>
+                        
+                        <p>즉, 쇼팽은 어려서부터 음악이 자연스럽게 흐르는 환경 속에서 자랄 수 있었고, 피아노 소리를 듣고 자란 그는 3~4살 무렵부터 피아노를 치기 시작했지요. 어머니는 그런 쇼팽을 귀엽게 생각하여 그의 첫 번째 피아노 선생님이 되어 주었습니다.</p>
+                        
+                        <p>쇼팽의 재능은 예상보다 더 특별했습니다. 보통 아이들은 기초부터 배우지만, 쇼팽은 곧바로 즉흥 연주를 했고, 한 번 들은 곡을 그대로 따라 연주할 수 있을 정도였으니 할 말이 없었지요.</p>
+                        
+                        <p>6살 때, 그는 이미 단순한 연습곡이 아니라, 자신만의 곡을 만들기 시작했고, 가족들은 그가 작곡한 마주르카(폴란드 전통 춤곡)를 듣고 놀라움을 감추지 못 했습니다. 아버지는 그의 재능을 알아보고, 당시 폴란드 최고의 피아노 교사였던 보이치에흐 지브니(Wojciech Żywny)에게 그를 맡기는 선택을 하게 되죠.</p>
+                        
+                        <p>지브니는 쇼팽이 이미 악보 없이도 자유롭게 연주하고, 기초를 뛰어넘어 자신만의 감각으로 곡을 해석하는 모습에 "이 아이는 내가 가르칠 게 없다"고 극찬하기도 하였습니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <button class="arrow-right" onclick="goToNextPage()">→</button>
+        
+        <a href="Chopinclaude.html" class="heart-button">
+            <div class="heart-shape">
+                <span class="heart-number">0</span>
+            </div>
+        </a>
+    </div>
+
+    <script>
+        function flipCard() {
+            const flipContainer = document.querySelector('.flip-container');
+            flipContainer.classList.toggle('flipped');
+        }
+        
+        function goToPreviousPage() {
+            // 현재 페이지가 part1이면 이전 페이지는 없으므로 홈으로
+            window.location.href = 'part1.html';
+        }
+        
+        function goToNextPage() {
+            // 다음 페이지 (part2)로 이동
+            window.location.href = 'part1112.html';
+        }
+    </script>
+</body>
+</html>

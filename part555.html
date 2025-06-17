@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>part.5-5</title>
+    <style>
+        @font-face {
+            font-family: 'Cafe24ClassicType-Regular';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2210-2@1.0/Cafe24ClassicType-Regular.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Pretendard-Regular';
+            src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #FFEEE4;
+            font-family: 'Cafe24ClassicType-Regular', sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .gallery-menu {
+            position: absolute;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 10;
+        }
+
+        .menu-item {
+            color: #900606;
+            font-size: 19px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: normal;
+            line-height: 1.2;
+        }
+
+        .menu-item:hover {
+            transform: scale(1.15);
+        }
+
+        .gallery-menu:hover .menu-item:not(:hover) {
+            transform: scale(0.85);
+            opacity: 0.6;
+        }
+
+        /* 카드 뒤집기 효과를 위한 컨테이너 */
+        .flip-container {
+            width: 90vw; 
+            max-width: 840px;
+            height: 60vw;
+            max-height: 550px;
+            perspective: 1000px;
+            transform: translateY(-15px);
+            cursor: pointer;
+        }
+
+        .flip-card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+
+        .flip-container.flipped .flip-card {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 60px;
+            box-shadow: 0 30px 60px #F9DBC9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .card-front {
+            background-color: white;
+        }
+
+        .card-back {
+            background: white;
+            transform: rotateY(180deg);
+            color: #900606;
+            padding: 40px;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: stretch;
+        }
+
+        .card-back-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-shrink: 0;
+        }
+
+        .card-back-title {
+            text-align: center;
+            flex: 1;
+            font-family: Pretendard-Regular;
+        }
+
+        .card-back-title h1 {
+            font-size: 32px;
+            font-weight: bold;
+            font-family: Pretendard-Regular;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .card-back-title .subtitle {
+            font-size: 14px;
+            color: #000000;
+            align-self: flex-start;
+            font-family: Pretendard-Regular;
+        }
+
+        .card-back-part {
+            font-size: 14px;
+            color: #000000;
+            align-self: flex-end;
+            font-family: Pretendard-Regular;
+        }
+
+        .divider {
+            width: 100%;
+            height: 1px;
+            background-color: #ddd;
+            margin: 15px 0;
+            flex-shrink: 0;
+        }
+
+        .card-back-content {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            padding-left: 10px;
+            line-height: 1.5;
+            font-size: 18px;
+            color: #333;
+            text-align: justify;
+            font-family: Pretendard-Regular;
+        }
+
+        .card-back-content p {
+            margin-bottom: 20px;
+        }
+
+        /* 스크롤바 스타일링 */
+        .card-back-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .card-back-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .card-back-content::-webkit-scrollbar-thumb {
+            background: #acacac;
+            border-radius: 3px;
+        }
+
+        .card-back-content::-webkit-scrollbar-thumb:hover {
+            background: #900606;
+        }
+
+        .card-front img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 64px;
+            filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.15));
+        }
+
+        /* 하트 버튼 스타일 - 사진에 맞게 수정 */
+        .heart-button {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            width: 60px;
+            height: 55px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .heart-button:hover {
+            transform: scale(1.1);
+        }
+
+        .heart-shape {
+            position: relative;
+            width: 60px;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .heart-shape:before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 30px;
+            height: 48px;
+            background: #900606;
+            border-radius: 30px 30px 0 0;
+            transform: rotate(-45deg);
+            transform-origin: 0 100%;
+        }
+
+        .heart-shape:after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 30px;
+            height: 48px;
+            background: #900606;
+            border-radius: 30px 30px 0 0;
+            transform: rotate(45deg);
+            transform-origin: 50% 25%;
+        }
+
+        .heart-number {
+            font-family: 'Cafe24ClassicType-Regular';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            z-index: 1;
+            margin-top: -2px;
+        }
+
+
+        .arrow-left, .arrow-right {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 45px;
+            height: 45px;
+            background-color: white;
+            border: 0.6px solid #F9DBC9;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 28px;
+            font-family: Pretendard-Regular;
+            font-weight: bold;
+            color: #900606;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0px 10px #F9DBC9;
+        }
+
+        .arrow-left {
+            left: 50%;
+            margin-left: -500px;
+        }
+
+        .arrow-right {
+            right: 50%;
+            margin-right: -500px;
+        }
+
+        .arrow-left:hover, .arrow-right:hover {
+            transform: translateY(-50%) scale(1.1);
+            color: #900606;
+            box-shadow: 0 12px 24px #e0c3b2;
+        }
+
+        @media (max-width: 1200px) {
+            .gallery-menu {
+                left: 40px;
+            }
+            
+            .menu-item {
+                font-size: 22px;
+            }
+            
+            .arrow-left {
+                margin-left: -400px;
+            }
+            
+            .arrow-right {
+                margin-right: -400px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .gallery-menu {
+                left: 20px;
+                gap: 12px;
+            }
+            
+            .menu-item {
+                font-size: 18px;
+            }
+            
+            .heart-button {
+                top: 15px;
+                right: 15px;
+                width: 50px;
+                height: 45px;
+            }
+            
+            .heart-shape {
+                width: 50px;
+                height: 45px;
+            }
+            
+            .heart-shape:before,
+            .heart-shape:after {
+                width: 25px;
+                height: 40px;
+                border-radius: 25px 25px 0 0;
+            }
+            
+            .heart-number {
+                font-size: 20px;
+            
+            }
+
+            
+            .arrow-left, .arrow-right {
+                font-size: 24px;
+                font-weight: bold;
+                width: 42px;
+                height: 42px;
+            }
+            
+            .arrow-left {
+                margin-left: -250px;
+            }
+            
+            .arrow-right {
+                margin-right: -250px;
+            }
+            
+            .flip-container {
+                width: 70vw;
+                height: 52.5vw;
+                transform: translateY(-10px);
+            }
+
+            .card-back {
+                padding: 25px;
+            }
+
+            .card-back-title h1 {
+                font-size: 30px;
+            }
+
+            .card-back-title .subtitle {
+                font-size: 12px;
+            }
+
+            .card-back-part {
+                font-size: 12px;
+            }
+
+            .card-back-content {
+                font-size: 12px;
+                line-height: 1.6;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="gallery-menu">
+            <a href="part1.html" class="menu-item">1st</a>
+            <a href="part2.html" class="menu-item">2nd</a>
+            <a href="part3.html" class="menu-item">3rd</a>
+            <a href="part4.html" class="menu-item">4th</a>
+            <a href="part5.html" class="menu-item">5th</a>
+            <a href="part6.html" class="menu-item">6th</a>
+            <a href="chopin2.html" class="menu-item">Gallery</a>
+            <a href="piano.html" class="menu-item">Piano</a>
+        </div>
+        
+        <button class="arrow-left" onclick="goToPreviousPage()">←</button>
+        
+        <div class="flip-container" onclick="flipCard()">
+            <div class="flip-card">
+                <div class="card-front">
+                    <img src="https://lh6.googleusercontent.com/proxy/NHNZug-j28R05BNg9RTlULuYQZ_EtVJCXGg-K7eG6cw-DMhBAl5GWdkxXjEtc_ZOR9yEJ-rXbccJPPexLRJVmkadq6S5cTJ-fVepxbf0" alt="Gallery Image">
+                </div>
+                <div class="card-back">
+                    <div class="card-back-header">
+                        <div class="card-back-title">
+                            <div class="subtitle">chopin</div>
+                            <h1>화려한 리스트와 내성적인 쇼팽</h1>
+                        </div>
+                        <div class="card-back-part">part.5</div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="card-back-content">
+                        <p>쇼팽과 리스트는 1830년대 파리에서 처음 만났습니다. 당시 리스트는 피아노 무대에서 가장 화려한 스타였고, 쇼팽은 조용하고 감성적인 스타일의 연주자였지요. 리스트가 무대 위에서 강렬한 퍼포먼스로 관객들을 열광시켰다면, 쇼팽은 살롱에서 우아하게 연주하며 귀족들의 마음을 사로잡았습니다.</p>
+
+<p>이 두 사람의 스타일 차이를 가장 잘 보여주는 곡이 바로 쇼팽의 <strong>화려한 왈츠 Op. 34 No. 1</strong>입니다. 제목에 “화려한”이라는 말이 들어가지만, 리스트의 화려함과는 그 결이 다릅니다. 쇼팽은 빠르고 세련된 멜로디 속에서도 특유의 우아함을 잃지 않지요. 리스트가 무대 위에서 폭풍처럼 휘몰아치는 연주를 선보였다면, 쇼팽은 그 모든 것을 우아한 춤사위처럼 표현해냈습니다.</p>
+
+<p>쇼팽은 리스트의 연주를 감탄하며 지켜보면서도, 속으로는 “나는 저렇게 요란하게 연주하고 싶지는 않아”라고 생각했을지도 모릅니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <button class="arrow-right" onclick="goToNextPage()">→</button>
+        
+        <a href="Chopinclaude.html" class="heart-button">
+            <div class="heart-shape">
+                <span class="heart-number">0</span>
+            </div>
+        </a>
+    </div>
+
+    <script>
+        function flipCard() {
+            const flipContainer = document.querySelector('.flip-container');
+            flipContainer.classList.toggle('flipped');
+        }
+        
+        function goToPreviousPage() {
+            // 현재 페이지가 part1이면 이전 페이지는 없으므로 홈으로
+            window.location.href = 'part5.html';
+        }
+        
+        function goToNextPage() {
+            // 다음 페이지 (part2)로 이동
+            window.location.href = 'part6.html';
+        }
+    </script>
+</body>
+</html>

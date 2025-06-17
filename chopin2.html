@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chopin Gallery</title>
+    <style>
+        @font-face {
+    font-family: 'YUniverse-B';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_yuniverse@1.0/YUniverse-B.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Cafe24ClassicType-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2210-2@1.0/Cafe24ClassicType-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        #player {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+            width: 1px;
+            height: 1px;
+        }
+
+        body {
+            background-color: #fffbe1; /* 크림색 배경 */
+            font-family: 'YUniverse-B', sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* 하트 버튼 스타일 - 사진에 맞게 수정 */
+        .heart-button {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            width: 60px;
+            height: 55px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .heart-button:hover {
+            transform: scale(1.1);
+        }
+
+        .heart-shape {
+            position: relative;
+            width: 60px;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .heart-shape:before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 30px;
+            height: 48px;
+            background: #434E0B;
+            border-radius: 30px 30px 0 0;
+            transform: rotate(-45deg);
+            transform-origin: 0 100%;
+        }
+
+        .heart-shape:after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 30px;
+            height: 48px;
+            background: #434E0B;
+            border-radius: 30px 30px 0 0;
+            transform: rotate(45deg);
+            transform-origin: 50% 25%;
+        }
+
+        .heart-number {
+            font-family: 'Cafe24ClassicType-Regular';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            z-index: 1;
+            margin-top: -2px;
+        }
+
+
+        .carousel-container {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            padding: 40px 0;
+        }
+
+        .carousel-track {
+            display: flex;
+            width: calc(400px * 14); /* 이미지 7개 * 2 (무한 스크롤을 위해 복제) */
+            animation: scroll 60s linear infinite; /* 60초로 속도 감소 */
+        }
+
+        .carousel-track:hover {
+            animation-play-state: paused; /* 마우스 오버시 애니메이션 일시 중지 */
+        }
+
+        .carousel-item {
+            flex: 0 0 350px; /* 이미지 크기 증가 */
+            height: 400px; /* 이미지 높이 증가 */
+            margin: 0 25px; /* 간격 증가 */
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-text {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            color: white;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 400;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(calc(-400px * 7)); /* 이미지 7개만큼 이동 */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .carousel-item {
+                flex: 0 0 300px;
+                height: 350px;
+                margin: 0 20px;
+            }
+            
+            .carousel-track {
+                width: calc(340px * 14);
+            }
+
+            .heart-button {
+                top: 15px;
+                right: 15px;
+                width: 50px;
+                height: 45px;
+            }
+            
+            .heart-shape {
+                width: 50px;
+                height: 45px;
+            }
+            
+            .heart-shape:before,
+            .heart-shape:after {
+                width: 25px;
+                height: 40px;
+                border-radius: 25px 25px 0 0;
+            }
+            
+            .heart-number {
+                font-size: 20px;
+            
+            }
+
+            
+            @keyframes scroll {
+                0% {
+                    transform: translateX(0);
+                }
+                100% {
+                    transform: translateX(calc(-340px * 7));
+                }
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="carousel-container">
+        <div class="carousel-track">
+            <!-- 원본 이미지 7개 -->
+            <div class="carousel-item">
+                <img src="https://i.imgur.com/QNoA1e8.jpeg" alt="조르주 상드">
+                <div class="item-text">George Sand</div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://i.imgur.com/rujbGXH.jpeg" alt="쇼팽과 조르주 상드">
+                <div class="item-text">Chopin & George Sand</div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://i.imgur.com/Fd5SaxK.jpeg" alt="쇼팽">
+                <div class="item-text">Chopin</div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://i.imgur.com/eLEeRyW.jpeg" alt="쇼팽/리스트">
+                <div class="item-text">Chopin & Liszt</div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://cafe24.poxo.com/ec01/mastmedia/UVTjSep0dwP4/wX7AtHyXDM5uGAkbzKjoPLYsVvzKATdcdxAQgNh4y+Xn4vCvZA0LGg4Nmg2IJa7bOcLEw/7LQ==/_/web/product/big//%EC%9D%B4%EC%A4%80%ED%97%8C/0348.jpg" alt="쇼팽 작품집">
+                <div class="item-text">Chopin Works</div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://cdn.kidshankook.kr/news/photo/202111/1600_4528_1140.png" alt="피아노">
+                <div class="item-text">Piano</div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://img1.daumcdn.net/thumb/R1280x0.fjpg/?fname=http://t1.daumcdn.net/brunch/service/user/52sw/image/MhYLBtrxb4FXfc97l3P2mfqWn-I.JPG" alt="쇼팽 초상화">
+                <div class="item-text">Chopin Portrait</div>
+            </div>
+            
+            <!-- 무한 스크롤을 위한 복제본 -->
+            <div class="carousel-item">
+                <img src="https://i.imgur.com/QNoA1e8.jpeg" alt="조르주 상드">
+                <div class="item-text">George Sand</div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://i.imgur.com/rujbGXH.jpeg" alt="쇼팽과 조르주 상드">
+                <div class="item-text">Chopin & George Sand</div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://i.imgur.com/Fd5SaxK.jpeg" alt="쇼팽">
+                <div class="item-text">Chopin</div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://i.imgur.com/eLEeRyW.jpeg" alt="쇼팽/리스트">
+                <div class="item-text">Chopin/Liszt</div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://cafe24.poxo.com/ec01/mastmedia/UVTjSep0dwP4/wX7AtHyXDM5uGAkbzKjoPLYsVvzKATdcdxAQgNh4y+Xn4vCvZA0LGg4Nmg2IJa7bOcLEw/7LQ==/_/web/product/big//%EC%9D%B4%EC%A4%80%ED%97%8C/0348.jpg" alt="쇼팽 작품집">
+                <div class="item-text">Chopin Works</div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://cdn.kidshankook.kr/news/photo/202111/1600_4528_1140.png" alt="피아노">
+                <div class="item-text">Piano</div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://img1.daumcdn.net/thumb/R1280x0.fjpg/?fname=http://t1.daumcdn.net/brunch/service/user/52sw/image/MhYLBtrxb4FXfc97l3P2mfqWn-I.JPG" alt="쇼팽 초상화">
+                <div class="item-text">Chopin Portrait</div>
+            </div>
+        </div>
+    </div>
+
+    <a href="Chopinclaude.html" class="heart-button">
+        <div class="heart-shape">
+            <span class="heart-number">0</span>
+        </div>
+    </a>
+</div>
+
+  <!-- 숨겨진 오디오 플레이어 -->
+<audio id="background-music" controls style="display:none;">
+    <source src="Chopin_Ballade_no4_op52.mp3" type="audio/mpeg">
+  </audio>
+  
+  <script>
+    window.onload = function() {
+      // 이벤트 리스너를 페이지에 추가
+      document.body.addEventListener('click', function() {
+        const music = document.getElementById('background-music');
+        music.volume = 0.2;
+        music.play();
+        console.log("재생 시도");
+      }, { once: true });
+      
+      // 오류 처리를 위한 리스너
+      document.getElementById('background-music').addEventListener('error', function(e) {
+        console.error("오디오 로딩 오류:", e);
+        alert("오디오 파일을 불러오는데 문제가 발생했습니다. 파일 경로를 확인해주세요.");
+      });
+    };
+  </script>
+</body>
+</html>

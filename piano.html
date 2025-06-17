@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>디지털 피아노</title>
+    <style>
+        @font-face {
+            font-family: 'Cafe24ClassicType-Regular';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2210-2@1.0/Cafe24ClassicType-Regular.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Pretendard-Regular';
+            src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #fffbe6;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* 하트 버튼 스타일 - 사진에 맞게 수정 */
+        .heart-button {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            width: 60px;
+            height: 55px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .heart-button:hover {
+            transform: scale(1.1);
+        }
+
+        .heart-shape {
+            position: relative;
+            width: 60px;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .heart-shape:before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 30px;
+            height: 48px;
+            background: #434E0B;
+            border-radius: 30px 30px 0 0;
+            transform: rotate(-45deg);
+            transform-origin: 0 100%;
+        }
+
+        .heart-shape:after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 30px;
+            height: 48px;
+            background: #434E0B;
+            border-radius: 30px 30px 0 0;
+            transform: rotate(45deg);
+            transform-origin: 50% 25%;
+        }
+
+        .heart-number {
+            font-family: 'Cafe24ClassicType-Regular';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            z-index: 1;
+            margin-top: -2px;
+        }
+
+        
+        .instructions {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .instructions h1 {
+            font-size: 5rem;
+            margin-bottom: 15px;
+            color: #333;
+            font-family: 'Cafe24ClassicType-Regular', sans-serif;
+            font-weight: normal;
+        }
+        
+        .instructions .keys {
+            font-size: 1.5rem;
+            color: #666;
+            margin: 5px 0;
+            font-family: 'Cafe24ClassicType-Regular', sans-serif;
+            letter-spacing: 0.2em;
+            font-weight: normal;
+        }
+
+        .instructions .keyboard-text {
+            font-size: 1.2rem;
+            color: #666;
+            margin: 15px 0 5px 0;
+            font-family: 'Pretendard-Regular', sans-serif;
+            font-weight: 400;
+        }
+        
+        .piano {
+            display: flex;
+            position: relative;
+            width: 95vw;
+            max-width: 1600px;
+            height: 500px;
+            border: 3px solid #000;
+            background-color: #f8f8f8;
+            box-shadow: 0 5px 20px rgba(161, 164, 110, 0.4);
+            margin-top: 20px;
+        }
+        
+        .white-key {
+            width: calc(100% / 21);
+            height: 100%;
+            background-color: white;
+            border: 1px solid #000;
+            box-sizing: border-box;
+            z-index: 1;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.1s ease;
+        }
+        
+        .black-key {
+            width: calc((100% / 21) * 0.6);
+            height: 60%;
+            background-color: black;
+            position: absolute;
+            z-index: 2;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.1s ease;
+        }
+        
+        .white-key:active, .white-key.active {
+            background-color: #e6e6e6;
+        }
+        
+        .black-key:active, .black-key.active {
+            background-color: #333;
+        }
+        
+        .white-key:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .black-key:hover {
+            background-color: #222;
+        }
+        
+        @media (max-width: 768px) {
+            .instructions h1 {
+                font-size: 3rem;
+            }
+            
+            .instructions .keys {
+                font-size: 1.2rem;
+            }
+
+            .instructions .keyboard-text {
+                font-size: 1rem;
+            }
+
+            .heart-button {
+                top: 15px;
+                right: 15px;
+                width: 50px;
+                height: 45px;
+            }
+            
+            .heart-shape {
+                width: 50px;
+                height: 45px;
+            }
+            
+            .heart-shape:before,
+            .heart-shape:after {
+                width: 25px;
+                height: 40px;
+                border-radius: 25px 25px 0 0;
+            }
+            
+            .heart-number {
+                font-size: 20px;
+            
+            }
+
+            
+            .piano {
+                width: 98vw;
+                height: 300px;
+            }
+            
+            body {
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .instructions h1 {
+                font-size: 2.5rem;
+            }
+            
+            .instructions .keys {
+                font-size: 1rem;
+            }
+
+            .instructions .keyboard-text {
+                font-size: 0.9rem;
+            }
+            
+            .piano {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="instructions">
+        <h1>play with me!</h1>
+        <p class="keys">A, S, D, F, G, H, J, K, L, ;, '</p>
+        <p class="keyboard-text">키보드를 눌러 보세요.</p>
+    </div>
+    
+    <div class="piano" id="piano">
+        <!-- 흰색 건반 21개 -->
+        <div class="white-key" data-note="C3"></div>
+        <div class="white-key" data-note="D3"></div>
+        <div class="white-key" data-note="E3"></div>
+        <div class="white-key" data-note="F3"></div>
+        <div class="white-key" data-note="G3"></div>
+        <div class="white-key" data-note="A3"></div>
+        <div class="white-key" data-note="B3"></div>
+        <div class="white-key" data-note="C4"></div>
+        <div class="white-key" data-note="D4"></div>
+        <div class="white-key" data-note="E4"></div>
+        <div class="white-key" data-note="F4"></div>
+        <div class="white-key" data-note="G4"></div>
+        <div class="white-key" data-note="A4"></div>
+        <div class="white-key" data-note="B4"></div>
+        <div class="white-key" data-note="C5"></div>
+        <div class="white-key" data-note="D5"></div>
+        <div class="white-key" data-note="E5"></div>
+        <div class="white-key" data-note="F5"></div>
+        <div class="white-key" data-note="G5"></div>
+        <div class="white-key" data-note="A5"></div>
+        <div class="white-key" data-note="B5"></div>
+        
+        <!-- 검은색 건반 위치 지정 -->
+        <div class="black-key" style="left: calc((100% / 21) * 0.7)" data-note="C#3"></div>
+        <div class="black-key" style="left: calc((100% / 21) * 1.7)" data-note="D#3"></div>
+        <div class="black-key" style="left: calc((100% / 21) * 3.7)" data-note="F#3"></div>
+        <div class="black-key" style="left: calc((100% / 21) * 4.7)" data-note="G#3"></div>
+        <div class="black-key" style="left: calc((100% / 21) * 5.7)" data-note="A#3"></div>
+        <div class="black-key" style="left: calc((100% / 21) * 7.7)" data-note="C#4"></div>
+        <div class="black-key" style="left: calc((100% / 21) * 8.7)" data-note="D#4"></div>
+        <div class="black-key" style="left: calc((100% / 21) * 10.7)" data-note="F#4"></div>
+        <div class="black-key" style="left: calc((100% / 21) * 11.7)" data-note="G#4"></div>
+        <div class="black-key" style="left: calc((100% / 21) * 12.7)" data-note="A#4"></div>
+        <div class="black-key" style="left: calc((100% / 21) * 14.7)" data-note="C#5"></div>
+        <div class="black-key" style="left: calc((100% / 21) * 15.7)" data-note="D#5"></div>
+        <div class="black-key" style="left: calc((100% / 21) * 17.7)" data-note="F#5"></div>
+        <div class="black-key" style="left: calc((100% / 21) * 18.7)" data-note="G#5"></div>
+        <div class="black-key" style="left: calc((100% / 21) * 19.7)" data-note="A#5"></div>
+    </div>
+
+    <button class="arrow-right" onclick="goToNextPage()">→</button>
+        
+    <a href="Chopinclaude.html" class="heart-button">
+        <div class="heart-shape">
+            <span class="heart-number">0</span>
+        </div>
+    </a>
+</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.26/Tone.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tone.js 신디사이저 생성
+            const synth = new Tone.Synth().toDestination();
+            
+            // 각 건반에 소리와 클릭 이벤트 연결
+            const keys = document.querySelectorAll('.white-key, .black-key');
+            keys.forEach(key => {
+                key.addEventListener('mousedown', () => {
+                    const note = key.getAttribute('data-note');
+                    playNote(note);
+                    key.classList.add('active');
+                });
+                
+                key.addEventListener('mouseup', () => {
+                    key.classList.remove('active');
+                });
+                
+                key.addEventListener('mouseleave', () => {
+                    key.classList.remove('active');
+                });
+            });
+            
+            // 키보드 입력으로 피아노 연주 (사진에 맞게 키 매핑 수정)
+            const keyMap = {
+                'a': 'C3', 's': 'D3', 'd': 'E3', 'f': 'F3', 'g': 'G3', 
+                'h': 'A3', 'j': 'B3', 'k': 'C4', 'l': 'D4', ';': 'E4', "'": 'F4'
+            };
+            
+            document.addEventListener('keydown', function(event) {
+                const key = event.key.toLowerCase();
+                if (keyMap[key] && !event.repeat) {
+                    const note = keyMap[key];
+                    playNote(note);
+                    
+                    // 해당 건반 활성화 표시
+                    const keyElement = document.querySelector(`[data-note="${note}"]`);
+                    if (keyElement) {
+                        keyElement.classList.add('active');
+                    }
+                }
+            });
+            
+            document.addEventListener('keyup', function(event) {
+                const key = event.key.toLowerCase();
+                if (keyMap[key]) {
+                    const note = keyMap[key];
+                    const keyElement = document.querySelector(`[data-note="${note}"]`);
+                    if (keyElement) {
+                        keyElement.classList.remove('active');
+                    }
+                }
+            });
+            
+            function playNote(note) {
+                synth.triggerAttackRelease(note, "8n");
+            }
+        });
+    </script>
+</body>
+</html>
